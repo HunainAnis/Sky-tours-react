@@ -1,26 +1,35 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Main from './mainComponent';
 
-function App() {
+class App extends React.Component {
+  state={
+    starships:[],
+    winner:'LUKE',
+    loaded: false
+  }
+  componentDidMount() {
+    fetch('https://swapi.dev/api/starships/')
+      .then(response => {
+        response.json()
+        .then(result => {
+          return this.setState({starships:result.results})
+        })
+        .then(()=>this.setState({loaded:true}))
+      })
+  }
+
+render() {
+  const { starships, winner, loaded } = this.state
+  if(!loaded) {
+    return <h1>Loading...</h1>
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Main starships={starships} winner={winner}  />
     </div>
   );
+}
 }
 
 export default App;
