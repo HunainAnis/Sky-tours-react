@@ -7,7 +7,9 @@ class Main extends React.Component {
     constructor(props) {
         super(props)
         this.state ={
-            rounds:[]
+            rounds:[],
+            number:0,
+            winner:null
         }
     }
     
@@ -21,7 +23,21 @@ class Main extends React.Component {
             luke: randomShip2
         }
     }
+    buttonUpdate() {
+      switch(this.state.number) {
+        case 0:
+          return 'New Game'
+        case 1:
+          return 'Go to Round 2'
+        case 2:
+          return 'Go to Round 3'
+        case 3:
+          return 'Finish'
 
+        default:
+          return 'Restart'
+      }
+    }
     createRounds(i) {
         const { han, luke } = this.selectShips()
         return {
@@ -37,33 +53,56 @@ class Main extends React.Component {
         }
     }
     setRounds() {
-        for (let index = 0; this.state.rounds.length < 3; index++) {
-            this.state.rounds.push(this.createRounds(index+1))        
-        }
+      const { rounds, number } = this.state
+        this.setState({rounds:[...rounds, this.createRounds(rounds.length + 1) ], number:number+1})
+        // for (let index = 0; this.state.rounds.length < 3; index++) {
+        //     this.state.rounds.push(this.createRounds(index+1))        
+        // }
     }
     checkWinner() {
-        let luke
-        let han
-        this.state.rounds.map(round=> {
-            luke = luke + round.luke.speed
-            return han = han + round.hand.speed
-        })
+      const { rounds } = this.state
+      let scoreOfHan = 0
+      let scoreOfLuke = 0
+      rounds.map(i=>scoreOfHan += parseInt(i.han.speed))
+      rounds.map(i=>scoreOfLuke += parseInt(i.luke.speed))
+      console.log('Han',scoreOfHan, 'Luke',scoreOfLuke)
+      return scoreOfLuke > scoreOfHan ? 'Luke':'Han'
     }
-
+    gameStart() {
+      if(this.state.number !== 3) {
+          this.setRounds()
+      }else{
+        this.setState({winner:this.checkWinner()})
+      }
+    }
+    restartGame() {
+      if(this.state.winner !== null ) {
+        this.setState({
+          rounds:[],
+          number:0,
+          winner:null
+        })
+      }
+    }
 render() {
-    this.setRounds()
-    const { starships, winner } = this.props
-    console.log(this.state.rounds)
-   starships.length !== 0 && console.log(this.selectShips())
+    // console.log(this.state.rounds)
+  //  starships.length !== 0 && console.log(this.selectShips())
   return (
     <div style={{ height:600, backgroundRepeat:'no-repeat', backgroundPosition:'center' , backgroundImage:`url('${Background}')`}}>
       <div className='container'>
-        {this.state.winner !== null && <h1 style={{color:'white', textAlign:'center'}}>Winner: {winner}</h1>}
+        <div style={{height:50}}></div>
+        {this.state.winner !== null && <h1 style={{color:'white', textAlign:'center'}}>Winner: {this.state.winner}</h1>}
         <div className='row'>
           <div className='col col-sm-4'>
             <PlayerTiles rounds={this.state.rounds} player='luke' />
           </div>
           <div className='col col-sm-4'>
+            <button onClick={()=>this.gameStart()} className='btn-lg btn-success'>{this.buttonUpdate()}</button>
+            {
+              this.state.winner !== null
+              &&
+              <button onClick={()=>this.restartGame()} className='btn-lg btn-success'>Restart</button>
+            }
           </div>
           <div className='col col-sm-4'>
             <PlayerTiles rounds={this.state.rounds} player='han' />
@@ -71,7 +110,6 @@ render() {
         </div>
         <div className='row'>
           <div className='col col-sm-4 offset-4'>
-            <button className='btn-lg btn-success'>New Game</button>
           </div>
         </div>
       </div>

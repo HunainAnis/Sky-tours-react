@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Ship from './assets/images/image--001.jpg'
 
 export const PlayerTiles = ({ player, rounds }) => {
-    // const [ rounds, setRounds ] = useState([])
     // const setShips = (ship) => {
     //     return setRounds(rounds.concat(ship))
     // }
@@ -10,8 +9,8 @@ export const PlayerTiles = ({ player, rounds }) => {
     // console.log(ships.name)
     const eachRound = (round) => {
         return (
-            <div>
-                <h6 key={round.roundNumber} style={{color:'white'}}>Round {round.roundNumber}: {round[player].name} - {round[player].speed}</h6>
+            <div key={round.roundNumber}>
+                <h6 style={{color:'white'}}>Round {round.roundNumber}: {round[player].name} - {round[player].speed}</h6>
             </div>
         )
     }
@@ -20,7 +19,7 @@ export const PlayerTiles = ({ player, rounds }) => {
             <div className='row'>
                 {
                 rounds.map(round=>(
-                        setTimeout(eachRound(round), 1000)
+                        eachRound(round)
                     ))
                 }
             </div>
